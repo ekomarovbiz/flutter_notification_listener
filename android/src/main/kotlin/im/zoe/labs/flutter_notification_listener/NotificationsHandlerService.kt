@@ -145,6 +145,14 @@ class NotificationsHandlerService: MethodChannel.MethodCallHandler, Notification
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         super.onNotificationPosted(sbn)
 
+        if (sbn.packageName == "ru.tinkoff.investing") {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cancelNotification(sbn.key)
+            } else {
+                cancelNotification(sbn.packageName, sbn.tag, sbn.id)
+            }
+        }
+
         FlutterInjector.instance().flutterLoader().startInitialization(mContext)
         FlutterInjector.instance().flutterLoader().ensureInitializationComplete(mContext, null)
 
