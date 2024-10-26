@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,14 +12,14 @@ typedef EventCallbackFunc = void Function(NotificationEvent evt);
 
 /// NotificationsListener
 class NotificationsListener {
-  static const CHANNELID = "flutter_notification_listener";
-  static const SEND_PORT_NAME = "notifications_send_port";
+  static const channelId = "flutter_notification_listener";
+  static const sendPortName = "notifications_send_port";
 
   static const MethodChannel _methodChannel =
-      const MethodChannel('$CHANNELID/method');
+      MethodChannel('$channelId/method');
 
   static const MethodChannel _bgMethodChannel =
-      const MethodChannel('$CHANNELID/bg_method');
+      MethodChannel('$channelId/bg_method');
 
   static MethodChannel get bgMethodChannel => _bgMethodChannel;
 
@@ -29,9 +30,9 @@ class NotificationsListener {
     if (_receivePort == null) {
       _receivePort = ReceivePort();
       // remove the old one at first.
-      IsolateNameServer.removePortNameMapping(SEND_PORT_NAME);
+      IsolateNameServer.removePortNameMapping(sendPortName);
       IsolateNameServer.registerPortWithName(
-          _receivePort!.sendPort, SEND_PORT_NAME);
+          _receivePort!.sendPort, sendPortName);
     }
     return _receivePort;
   }
@@ -155,10 +156,15 @@ class NotificationsListener {
   }
 
   static void _defaultCallbackHandle(NotificationEvent evt) {
-    final SendPort? _send = IsolateNameServer.lookupPortByName(SEND_PORT_NAME);
-    print("[default callback handler] [send isolate nameserver]");
-    if (_send == null)
-      print("IsolateNameServer: can not find send $SEND_PORT_NAME");
+    final SendPort? _send = IsolateNameServer.lookupPortByName(sendPortName);
+    if (kDebugMode) {
+      print("[default callback handler] [send isolate nameserver]");
+    }
+    if (_send == null && kDebugMode) {
+      if (kDebugMode) {
+        print("IsolateNameServer: can not find send $sendPortName");
+      }
+    }
     _send?.send(evt);
   }
 }
@@ -180,7 +186,9 @@ void callbackDispatcher({inited = true}) {
                 CallbackHandle.fromRawHandle(args[0]));
 
             if (callback == null) {
-              print("callback is not register: ${args[0]}");
+              if (kDebugMode) {
+                print("callback is not register: ${args[0]}");
+              }
               return;
             }
 
@@ -189,15 +197,20 @@ void callbackDispatcher({inited = true}) {
           break;
         default:
           {
-            print("unknown bg_method: ${call.method}");
+            if (kDebugMode) {
+              print("unknown bg_method: ${call.method}");
+            }
           }
       }
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   });
 
   // if start the ui first, this will cause method not found error
-  if (inited)
+  if (inited) {
     NotificationsListener._bgMethodChannel.invokeMethod('service.initialized');
+  }
 }
