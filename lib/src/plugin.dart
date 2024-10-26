@@ -51,10 +51,10 @@ class NotificationsListener {
   static Future<void> initialize({
     EventCallbackFunc callbackHandle = _defaultCallbackHandle,
   }) async {
-    final CallbackHandle _callbackDispatch =
+    final CallbackHandle callbackDispatch =
         PluginUtilities.getCallbackHandle(callbackDispatcher)!;
     await _methodChannel.invokeMethod(
-        'plugin.initialize', _callbackDispatch.toRawHandle());
+        'plugin.initialize', callbackDispatch.toRawHandle());
 
     // call this call back in the current engine
     // this is important to use ui flutter engine access `service.channel`
@@ -67,10 +67,10 @@ class NotificationsListener {
 
   /// Register a new event handler
   static Future<void> registerEventHandle(EventCallbackFunc callback) async {
-    final CallbackHandle _callback =
+    final CallbackHandle callbackHandle =
         PluginUtilities.getCallbackHandle(callback)!;
     await _methodChannel.invokeMethod(
-        'plugin.registerEventHandle', _callback.toRawHandle());
+        'plugin.registerEventHandle', callbackHandle.toRawHandle());
   }
 
   /// check the service running or not
@@ -156,16 +156,16 @@ class NotificationsListener {
   }
 
   static void _defaultCallbackHandle(NotificationEvent evt) {
-    final SendPort? _send = IsolateNameServer.lookupPortByName(sendPortName);
+    final SendPort? send = IsolateNameServer.lookupPortByName(sendPortName);
     if (kDebugMode) {
       print("[default callback handler] [send isolate nameserver]");
     }
-    if (_send == null && kDebugMode) {
+    if (send == null && kDebugMode) {
       if (kDebugMode) {
         print("IsolateNameServer: can not find send $sendPortName");
       }
     }
-    _send?.send(evt);
+    send?.send(evt);
   }
 }
 
