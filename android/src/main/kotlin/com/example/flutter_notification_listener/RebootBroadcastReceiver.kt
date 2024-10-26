@@ -1,4 +1,4 @@
-package im.zoe.labs.flutter_notification_listener
+package com.example.flutter_notification_listener
 
 import android.content.BroadcastReceiver
 import android.content.ComponentName

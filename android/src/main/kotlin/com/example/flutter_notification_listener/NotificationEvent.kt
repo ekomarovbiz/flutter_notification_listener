@@ -1,4 +1,4 @@
-package im.zoe.labs.flutter_notification_listener
+package com.example.flutter_notification_listener
 
 import android.app.Notification
 import android.content.Context
@@ -8,7 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.service.notification.StatusBarNotification
 import androidx.annotation.RequiresApi
-import im.zoe.labs.flutter_notification_listener.Utils.Companion.toBitmap
+import com.example.flutter_notification_listener.Utils.Companion.toBitmap
 import java.io.ByteArrayOutputStream
 
 class NotificationEvent(context: Context, sbn: StatusBarNotification) {
